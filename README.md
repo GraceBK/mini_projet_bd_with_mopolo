@@ -7,6 +7,19 @@ Projet de Base de Donnée avec MOPOLO
 
 Archivage Activé
 
+
+# Première connexion avec SQL\*Plus 
+
+	sqlplus system/mot_de_passe@service
+	system = un nom d'utilisateur
+
+	sys/Objectif20 as sysdba
+
+pour ne plus avoir a ecrire tout cela on peut modifier le fichier
+	tnsnames.ora
+qui se trouve dans mon cas :
+	C:/app/Gb/product/11.2.0/dbhome_1/NETWORK/ADMIN
+
 ## 2-) Creation d'un espace table à l'aide de la commande suivante dans SQL\*Plus.
 #### Dans l'exemple, remplacez le répertoire indiqué par celui dans lequel réside la base de données. Le répertoire doit exister pour que la commande aboutisse.
 
@@ -30,3 +43,8 @@ Archivage Activé
 # 2. Organisation physique de la base sous Oracle 11g (2 jours)
 
 -- Créer les tablespaces suivants et expliquer leur intérêt:
+
+
+# ETAPE 
+## Etape 1) Création de la base de données
+## Etape 2) Création des tablespaces
