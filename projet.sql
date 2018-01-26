@@ -63,6 +63,82 @@ create temporary tablespace TS_SEG_TEMP
 -------- Note: Tous vos tablespaces seront gérés localement. Ils seront en mode AUTOALLOCATE
 -------- ou UNIFORM SIZE. Vous devez expliquer l’intérêt et les bénéfices de vos choix.
 
+--______________________________________________________________________________________--
+
+-- SALON (NUM_SAL, NOM_SAL, PAYS_SAL, VILLE_SAL, DATE_DEBUT_SAL, DATE_FIN_SAL)
+create table SALON (
+	NUM_SAL 		int not null,
+	NOM_SAL 		varchar(100),
+	PAYS_SAL 		varchar(255),
+	VILLE_SAL 		varchar(255),
+	DATE_DEBUT_SAL 	date,
+	DATE_FIN_SAL	date,
+	primary key	(NUM_SAL)
+);
+-- UTILISATEUR (MAILTO_USR, NOM_USR, PRENOM_USR, DATE_NAISS_USR, PAYS_USR, VILLE_USR, NB_AMIS_USR)
+create table UTILISATEUR (
+	MAILTO_USR 		varchar(255) not null,
+	NOM_USR 		varchar(100),
+	PRENOM_USR 		varchar(100),
+	DATE_NAISS_USR 	varchar(255) not null,
+	PAYS_USR 		varchar(255),
+	VILLE_USR		varchar(255),
+	NB_AMIS_USR 	int,
+	primary key	(MAILTO_USR)
+);
+-- AMITIE (MAILTO_USR1, MAILTO_USR2)
+create table AMITIE (
+	MAILTO_USR1 	varchar(255) not null,
+	MAILTO_USR2		varchar(255) not null,
+	primary key	(MAILTO_USR1, MAILTO_USR2),
+);
+-- JEU (ID_JEU, NOM_JEU, ANNEE_SORTIE_JEU)
+create table JEU (
+	ID_JEU 				int not null,
+	NOM_JEU				varchar(255),
+	ANNEE_SORTIE_JEU	date,
+	primary key	(MAILTO_USR1, MAILTO_USR2),
+);
+-- FABRICANT (ID_FAB, NOM_FAB)
+create table FABRICANT (
+	ID_FAB		 	int not null,
+	NOM_FAB			varchar(255),
+	primary key	(MAILTO_USR1, MAILTO_USR2),
+);
+-- SERVEUR (ID_SER, NOM_SER)
+create table SERVEUR (
+	ID_SER		 	int not null,
+	NOM_SER			varchar(255),
+);
+-- LOCALITE (ID_LOC, VILLE_LOC)
+create table LOCALITE (
+	ID_LOC			int not null,
+	VILLE_LOC		varchar(255) unique
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ------ o Créer un utilisateur de votre choix qui sera propriétaire de votre application.
 ------   Les segments temporaires doivent être localisés dans le tablespace approprié créé
 ------   précédement. Vous devez lui donner les droits appropriés.
@@ -183,3 +259,76 @@ insert into AMITIE values('jean@etu.nantes.com', 'billy@gmail.com');
 insert into AMITIE values('billy@gmail.com', 'willy@gmail.com');
 insert into AMITIE values('billy@gmail.com', 'jean@etu.nantes.com');
 insert into AMITIE values('billy@gmail.com', 'martin@yahoo.fr');
+
+
+
+-- 3. Étape d'Administration (2 jours)
+---- 3.1 Sqlloader (voir le chap. 7 du cours ADB1)
+-------- Ecrire un script (fichier de contrôle SQLLOADER) qui permet de charger les lignes contenues
+-------- dans un fichier CSV (ligne à construire dans EXCEL) vers une ou plusieurs de vos tables.
+-------- Les données sont à préparer auparavant.
+-- REPONSE _____________________________________________________________________________--
+LOAD DATA
+INFILE '....csv'
+INTO TABLE UTILISATEUR
+FIELDS TERMINATED BY ','
+(
+MAILTO_USR,
+NOM_USR,
+PRENOM_USR,
+DATE_NAISS_USR,
+PAYS_USR,
+VILLE_USR,
+NB_AMIS_USR
+)
+
+---- 3.2 Divers requêtes
+------ 1) Ecrire une requête SQL qui permet de visualiser l’ensemble des fichiers qui composent votre base
+-- REPONSE _____________________________________________________________________________--
+select DBA_DATA_FILES.TABLESPACE_NAME, DBA_DATA_FILES.FILE_NAME, DBA_TEMP_FILES.TABLESPACE_NAME, DBA_TEMP_FILES.FILE_NAME,
+		v$logfile.GROUP#, v$logfile.MEMBER,
+		v$controlfile.NAME, v$controlfile.STATUS
+from DBA_DATA_FILES, DBA_TEMP_FILES, v$logfile, v$controlfile
+order DBA_TEMP_FILES.TABLESPACE_NAME,v$logfile.GROUP#, v$logfile.MEMBER, v$controlfile.NAME;
+
+
+------ 2) Ecrire une requête SQL qui permet de lister en une requête l’ensembles des tablespaces avec
+------    leur fichiers. La taille de chaque fichier doit apparaître, le volume total de l’espace occupé
+------    par fichier ainsi que le volume total de l’espace libre par fichier
+-- REPONSE _____________________________________________________________________________--
+
+select a.TABLESPACE_NAME, a.FILE_NAME, a.BYTES, b.free_bytes, nvl(a.bytes, 0)-nvl(b.free_bytes,0) " espace occupe"
+from (
+	select TABLESPACE_NAME, bytes, FILE_NAME
+	from DBA_DATA_FILES
+) a, (
+	select TABLESPACE_NAME, BYTES free_bytes
+	from DBA_FREE_SPACE
+) b
+where a.TABLESPACE_NAME = b.TABLESPACE_NAME;
+
+------ 3) Ecrire une requête SQL qui permet de lister les segments et leurs extensions
+--------- de chacun des segments (tables ou indexes) de votre utilisateur
+select segment_name, extents, segment_type from user dba_segments where owner='mopolo';
+
+------ 4) Ecrire une requête qui permet pour chacun de vos segments de donner le nombre
+--------- total de blocs du segment, le nombre de blocs utilisés et le nombre de blocs libres
+--- TODO
+
+------ 5) Ecrire une requête SQL qui permet de compacter et réduire un segment
+alter table UTILISATEUR enable row movement;
+alter table UTILISATEUR shrink space;
+
+------ 6) Ecrire une requête qui permet d’afficher l’ensemble des utilisateurs de votre base et leurs droits
+select username, privilege
+from
+	(dba_sys_privs)a,
+	(select username
+		from dba_users)b
+where a.grantee = b.username;
+
+------ 7) Proposer trois requêtes libres au choix de recherche d’objets dans le dictionnaire Oracle
+-- TODO Trop EASY ;)
+
+-- 3.3 Mise en place d'une stratégie de sauvegarde et restauration (voir le chap. 6 du cours ADB1)
+
