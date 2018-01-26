@@ -67,14 +67,23 @@ create temporary tablespace TS_SEG_TEMP
 
 -- SALON (NUM_SAL, NOM_SAL, PAYS_SAL, VILLE_SAL, DATE_DEBUT_SAL, DATE_FIN_SAL)
 create table SALON (
-	NUM_SAL 		int not null,
+	NUM_SAL 		int not null using index tablespace TS_INDEX_DATA storage(
+		initial 
+	),
 	NOM_SAL 		varchar(100),
 	PAYS_SAL 		varchar(255),
 	VILLE_SAL 		varchar(255),
 	DATE_DEBUT_SAL 	date,
 	DATE_FIN_SAL	date,
 	primary key	(NUM_SAL)
+)
+tablespace TS_SEG_TEMP
+storage(
+	initial ...,
+	next ...,
+	minextents 1
 );
+
 -- UTILISATEUR (MAILTO_USR, NOM_USR, PRENOM_USR, DATE_NAISS_USR, PAYS_USR, VILLE_USR, NB_AMIS_USR)
 create table UTILISATEUR (
 	MAILTO_USR 		varchar(255) not null,
@@ -119,8 +128,11 @@ create table LOCALITE (
 
 
 
+alter table SALON add constraint fk_heberge_par foreign key (ID_SER)
+references SERVEUR(ID_SER)
 
-
+alter table SALON add constraint fk_heberge_par foreign key (ID_SER)
+references SERVEUR(ID_SER)
 
 
 
@@ -163,7 +175,137 @@ alter user mopolo quota unlimited on users;
 --------    indexes afin de trouver le volume de données nécessaire dès la création de ces segments.
 --------    Il est important d’estimer le nombre total de lignes de chacune de vos tables
 -- REPONSE _____________________________________________________________________________--
--------- TODO : Demande de l'aide
+-------- reTODO : Demande de l'aide (Chap4 - Page 20)
+
+SET SERVEROUTPUT ON
+DECLARE
+v_used_bytes NUMBER(10);
+v_allocated_Bytes NUMBER(10);
+v_type_salon sys.create_table_cost_columns;
+v_type_utilisateur sys.create_table_cost_columns;
+v_type_amitie sys.create_table_cost_columns;
+v_type_jeu sys.create_table_cost_columns;
+v_type_fabricant sys.create_table_cost_columns;
+v_type_serveur sys.create_table_cost_columns;
+v_type_localite sys.create_table_cost_columns;
+
+BEGIN
+-- SALON (NUM_SAL, NOM_SAL, PAYS_SAL, VILLE_SAL, DATE_DEBUT_SAL, DATE_FIN_SAL)
+v_type_salon := sys.create_table_cost_columns (
+	sys.create_table_cost_colinfo('int', 3),
+	sys.create_table_cost_colinfo('varchar2', 100),
+	sys.create_table_cost_colinfo('varchar2', 255),
+	sys.create_table_cost_colinfo('varchar2', 255),
+	sys.create_table_cost_colinfo('date', null),
+	sys.create_table_cost_colinfo('date', null));
+DBMS_SPACE.CREATE_TABLE_COST(
+	-- TODO pourquoi ne pas utiliser TS_SEG_TEMP au lieu de TS_DATA_USER
+	'TS_DATA_USER',
+	v_type_salon,
+	...ROW_COUNT...,
+	v_used_bytes,
+	v_allocated_Bytes
+);
+DBMS_OUTPUT.PUT_LINE(
+	'Salon: ' || TO_CHAR(v_used_bytes) || ' Allocated Bytes: ' || TO_CHAR(v_allocated_Bytes)
+);
+
+-- UTILISATEUR (MAILTO_USR, NOM_USR, PRENOM_USR, DATE_NAISS_USR, PAYS_USR, VILLE_USR, NB_AMIS_USR)
+v_type_utilisateur := sys.create_table_cost_columns (
+	sys.create_table_cost_colinfo('varchar2', 255),
+	sys.create_table_cost_colinfo('varchar2', 100),
+	sys.create_table_cost_colinfo('varchar2', 100),
+	sys.create_table_cost_colinfo('date', null),
+	sys.create_table_cost_colinfo('varchar2', 255),
+	sys.create_table_cost_colinfo('varchar2', 255),
+	sys.create_table_cost_colinfo('int', 2));
+DBMS_SPACE.CREATE_TABLE_COST(
+	'TS_DATA_USER',
+	v_type_utilisateur,
+	...ROW_COUNT...,
+	v_used_bytes,
+	v_allocated_Bytes
+);
+DBMS_OUTPUT.PUT_LINE(
+	'Utilisateur: ' || TO_CHAR(v_used_bytes) || ' Allocated Bytes: ' || TO_CHAR(v_allocated_Bytes)
+);
+
+-- AMITIE (MAILTO_USR1, MAILTO_USR2)
+v_type_amitie := sys.create_table_cost_columns (
+	sys.create_table_cost_colinfo('varchar2', 255),
+	sys.create_table_cost_colinfo('varchar2', 255));
+DBMS_SPACE.CREATE_TABLE_COST(
+	'TS_DATA_USER',
+	v_type_amitie,
+	...ROW_COUNT...,
+	v_used_bytes,
+	v_allocated_Bytes
+);
+DBMS_OUTPUT.PUT_LINE(
+	'Amitie: ' || TO_CHAR(v_used_bytes) || ' Allocated Bytes: ' || TO_CHAR(v_allocated_Bytes)
+);
+
+-- JEU (ID_JEU, NOM_JEU, ANNEE_SORTIE_JEU)
+v_type_jeu := sys.create_table_cost_columns (
+	sys.create_table_cost_colinfo('varchar2', 255),
+	sys.create_table_cost_colinfo('varchar2', 255));
+DBMS_SPACE.CREATE_TABLE_COST(
+	'TS_DATA_USER',
+	v_type_jeu,
+	...ROW_COUNT...,
+	v_used_bytes,
+	v_allocated_Bytes
+);
+DBMS_OUTPUT.PUT_LINE(
+	'Jeu: ' || TO_CHAR(v_used_bytes) || ' Allocated Bytes: ' || TO_CHAR(v_allocated_Bytes)
+);
+
+-- FABRICANT (ID_FAB, NOM_FAB)
+v_type_fabricant := sys.create_table_cost_columns (
+	sys.create_table_cost_colinfo('int', 2),
+	sys.create_table_cost_colinfo('varchar2', 255));
+DBMS_SPACE.CREATE_TABLE_COST(
+	'TS_DATA_USER',
+	v_type_jeu,
+	...ROW_COUNT...,
+	v_used_bytes,
+	v_allocated_Bytes
+);
+DBMS_OUTPUT.PUT_LINE(
+	'Fabricant: ' || TO_CHAR(v_used_bytes) || ' Allocated Bytes: ' || TO_CHAR(v_allocated_Bytes)
+);
+
+-- SERVEUR (ID_SER, NOM_SER)
+v_type_serveur := sys.create_table_cost_columns (
+	sys.create_table_cost_colinfo('int', 2),
+	sys.create_table_cost_colinfo('varchar2', 255));
+DBMS_SPACE.CREATE_TABLE_COST(
+	'TS_DATA_USER',
+	v_type_serveur,
+	...ROW_COUNT...,
+	v_used_bytes,
+	v_allocated_Bytes
+);
+DBMS_OUTPUT.PUT_LINE(
+	'Fabricant: ' || TO_CHAR(v_used_bytes) || ' Allocated Bytes: ' || TO_CHAR(v_allocated_Bytes)
+);
+
+-- LOCALITE (ID_LOC, VILLE_LOC)
+v_type_localite := sys.create_table_cost_columns (
+	sys.create_table_cost_colinfo('int', 2),
+	sys.create_table_cost_colinfo('varchar2', 255));
+DBMS_SPACE.CREATE_TABLE_COST(
+	'TS_DATA_USER',
+	v_type_localite,
+	...ROW_COUNT...,
+	v_used_bytes,
+	v_allocated_Bytes
+);
+DBMS_OUTPUT.PUT_LINE(
+	'Fabricant: ' || TO_CHAR(v_used_bytes) || ' Allocated Bytes: ' || TO_CHAR(v_allocated_Bytes)
+);
+END
+
 
 
 --------  Insérer pour l’instant en moyenne une dizaine de lignes de test dans chacune des tables.
@@ -231,8 +373,8 @@ insert into UTILISATEUR values('haruno@yahoo.com', 'Haruno', 'Sakura', '28/03/19
 insert into UTILISATEUR values('hitachi@live.fr', 'Uchiha', 'Hitachi', '09/06/1975', '', '', 0);
 insert into UTILISATEUR values('martin@yahoo.fr', 'Vernin', 'Martin', '01/04/1995', 'France', 'Lyon', 3);
 insert into UTILISATEUR values('jean@etu.nantes.com', 'Hermes', 'Jean', '25/12/1999', 'France', 'Nantes', 3);
-insert into UTILISATEUR values('arnold@hotmail.com', '', 'Arnold', '//2000', 'France', 'Marseille', 1);
-insert into UTILISATEUR values('willy@gmail.com', '', 'Willy', '//1996', 'France', 'Toulouse', 2);
+insert into UTILISATEUR values('arnold@hotmail.com', 'Drummond', 'Arnold', '03/12/2000', 'France', 'Marseille', 1);
+insert into UTILISATEUR values('willy@gmail.com', 'Drummond', 'Willy', '15/05/1996', 'France', 'Toulouse', 2);
 insert into UTILISATEUR values('billy@gmail.com', 'The Kid', 'Billy', '14/07/1996', '', '', 11);
 insert into UTILISATEUR values('lili@gmail.com', 'Bela', 'Liz', '11/05/1995', 'Italie', 'Rome', 1);
 
