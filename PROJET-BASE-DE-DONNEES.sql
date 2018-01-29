@@ -4,7 +4,7 @@ o Prendre en compte dans cette phase les règles de gestion de type contraintes
 d'intégrités (de domaine : check/not null, d’entité : primary key/unique key, de
 référence : foreign key)
 
-create table Salon(
+CREATE TABLE Salon(
 	numS number(4) NOT NULL, 
 	nomS VARCHAR2(100),
 	paysS VARCHAR2(255),
@@ -23,7 +23,7 @@ CONSTRAINT Heberge_Par FOREIGN KEY (IdServ)
 	REFERENCES Jeu(IdJeu)
 */
 
-create table Utilisateur(
+CREATE TABLE Utilisateur(
 	mailtoUsr VARCHAR(255) NOT NULL,
 	nomUsr VARCHAR(100),
 	prenomUsr VARCHAR(100),
@@ -41,7 +41,7 @@ CONSTRAINT ParticipeA FOREIGN KEY (numS)
 	REFERENCES Salon(numS)
 */
 
-create table AMITIE(
+CREATE TABLE AMITIE(
 	mailtoUsr1 VARCHAR(255) not null,
 	mailtoUsr2 VARCHAR(255) NOT NULL,
 	PRIMARY KEY(mailtoUsr1, mailtoUsr2) USING INDEX tablespace TS_INDEX_DATA
@@ -53,7 +53,7 @@ STORAGE(INITIAL 2048K NEXT 2048K PCTINCREASE 0 MINEXTENTS 1);
 FOREIGN KEY(mailtoUsr2) REFERENCES utilisateur
 */
 
-create table Jeu(
+CREATE TABLE Jeu(
 	IdJeu int NOT NULL,
 	nomJeu VARCHAR(255),
 	annee_sortie DATE,
@@ -67,15 +67,15 @@ CONSTRAINT Fabrique_Par FOREIGN KEY (IdF)
 	REFERENCES Fabricant(IdF)
 */
 
-create table Fabricant(
+CREATE TABLE Fabricant(
 	IdF int NOT NULL,
-	nomF VARCHAR(255)
+	nomF VARCHAR(255),
 	PRIMARY KEY (IdF) USING INDEX tablespace TS_INDEX_DATA
 	STORAGE(INITIAL 64K NEXT 64K PCTINCREASE 0 MINEXTENTS 1))
 tablespace TS_DATA_FAB_JEU
 STORAGE(INITIAL 2048K NEXT 2048K PCTINCREASE 0 MINEXTENTS 1);
 
-create table Serveur(
+CREATE TABLE Serveur(
 	IdServ int NOT NULL,
 	nomServ VARCHAR(255),
 	PRIMARY KEY (IdServ) USING INDEX tablespace TS_INDEX_DATA
@@ -88,12 +88,12 @@ CONSTRAINT Se_trouve FOREIGN KEY (IdLoc)
 	REFERENCES Localite(IdLoc)
 */
 
-create table Localite(
+CREATE TABLE Localite(
 	IdLoc int NOT NULL,
-	ville VARCHAR(255) UNIQUE
+	ville VARCHAR(255) UNIQUE,
 	PRIMARY KEY (IdLoc) USING INDEX tablespace TS_INDEX_DATA
 	STORAGE(INITIAL 64K NEXT 64K PCTINCREASE 0 MINEXTENTS 1))
-tablespace TS_dataServNLoc
+tablespace TS_DATA_SERV_LOCALITE
 STORAGE(INITIAL 1024K NEXT 1024K PCTINCREASE 0 MINEXTENTS 1);
 
 o Définir au moins un trigger pour assurer l’intégrité des données ne pouvant être

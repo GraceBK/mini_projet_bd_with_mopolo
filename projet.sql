@@ -35,6 +35,19 @@ LOCALITE (ID_LOC, VILLE_LOC)
 ------ o Créer les tablespaces suivants et expliquer leur intérêt:
 --------  Un ou plusieurs tabespaces pour stocker les données des tables.
 -- REPONSE _____________________________________________________________________________--
+SQL> CREATE TABLESPACE TS_DATA_SERV_LOCALITE
+  2  DATAFILE 'C:\APP\GB\ORADATA\PROJETJGM\TS_DATA_SERV_LOCALITE.dbf'
+  3  SIZE 10M
+  4  EXTENT MANAGEMENT LOCAL AUTOALLOCATE;
+
+Tablespace crÚÚ.
+
+SQL> CREATE TABLESPACE TS_DATA_FAB_JEU
+  2  DATAFILE 'C:\APP\GB\ORADATA\PROJETJGM\TS_DATA_FAB_JEU.dbf'
+  3  SIZE 10M
+  4  EXTENT MANAGEMENT LOCAL AUTOALLOCATE;
+
+Tablespace crÚÚ.
 ------------- TableSpaces pour stocker les données de tables:
 SQL> CREATE TABLESPACE TS_DATA_USER
   2  DATAFILE 'C:\APP\GB\ORADATA\PROJETJGM\TS_DATA_USER.dbf'
@@ -104,6 +117,198 @@ ORA-12906: impossible de supprimer le tablespace temporaire par dÚfaut
 SQL> ALTER DATABASE DEFAULT TEMPORARY TABLESPACE TS_SEG_TEMP;
 
 /*Base de donnÚes modifiÚe.*/
+------------------------------------------------------
+-- CREATION D'UN UTILISATEUR
+SQL> CREATE USER toto IDENTIFIED BY azerty
+  2  DEFAULT TABLESPACE USERS
+  3  TEMPORARY TABLESPACE TS_SEG_TEMP
+  4  QUOTA UNLIMITED ON USERS
+  5  QUOTA UNLIMITED ON TS_DATA_USER
+  6  QUOTA UNLIMITED ON TS_INDEX_DATA
+  7  QUOTA UNLIMITED ON TS_DATA_SERV_LOCALITE
+  8  QUOTA UNLIMITED ON TS_DATA_FAB_JEU;
+
+/*Utilisateur crÚÚ.*/
+
+/*
+SQL> connect toto/azerty
+ERROR:
+ORA-01045: l'utilisateur TOTO n'a pas le privilÞge CREATE SESSION ; connexion refusÚe
+
+
+Avertissement : vous n'Ûtes plus connectÚ Ó ORACLE.
+SQL> exit
+
+C:\Users\Gb>sqlplus
+
+SQL*Plus: Release 11.2.0.1.0 Production on Lun. Janv. 29 15:06:12 2018
+
+Copyright (c) 1982, 2010, Oracle.  All rights reserved.
+
+Entrez le nom utilisateur : toto/azerty
+ERROR:
+ORA-01045: l'utilisateur TOTO n'a pas le privilÞge CREATE SESSION ; connexion
+refusÚe
+
+
+Entrez le nom utilisateur : sys/Objectif20 as sysdba
+
+ConnectÚ Ó :
+Oracle Database 11g Enterprise Edition Release 11.2.0.1.0 - 64bit Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+
+SQL> GRANT dba to toto;
+
+Autorisation de privilÞges (GRANT) acceptÚe.
+
+SQL> REVOKE UNLIMITED TABLESPACE FROM toto;
+
+Suppression de privilÞges (REVOKE) acceptÚe.
+
+SQL> connect toto/azerty
+ConnectÚ.
+
+SQL> connect toto/azerty
+ConnectÚ.
+SQL> connect sys/Objectif20 as sysdba
+ConnectÚ.
+SQL> DROP USER toto CASCADE;
+
+Utilisateur supprimÚ.
+*/
+
+SQL> CREATE USER toto IDENTIFIED BY azerty
+  2  DEFAULT TABLESPACE USERS
+  3  TEMPORARY TABLESPACE TS_SEG_TEMP;
+
+Utilisateur crÚÚ.
+
+SQL> GRANT dba TO toto;
+
+Autorisation de privilÞges (GRANT) acceptÚe.
+
+SQL> REVOKE UNLIMITED TABLESPACE FROM toto;
+
+Suppression de privilÞges (REVOKE) acceptÚe.
+
+SQL> CONNECT toto/azerty
+ConnectÚ.
+
+SQL> CONNECT toto/azerty
+ConnectÚ.
+SQL> ALTER USER toto QUOTA UNLIMITED ON USERS
+  2  QUOTA UNLIMITED ON TS_DATA_USER
+  3  QUOTA UNLIMITED ON TS_DATA_FAB_JEU
+  4  QUOTA UNLIMITED ON TS_DATA_SERV_LOCALITE
+  5  QUOTA UNLIMITED ON TS_INDEX_DATA
+  6  ;
+/*Utilisateur modifiÚ.*/
+
+/*
+CREATION des tables
+*/
+SQL> create table Salon(
+  2  numS number(4) NOT NULL,
+  3  nomS VARCHAR2(100),
+  4  paysS VARCHAR2(255),
+  5  villeS VARCHAR2(255),
+  6  date_DebutS DATE not null,
+  7  date_FinS DATE,
+  8  PRIMARY KEY(numS)  USING INDEX tablespace TS_INDEX_DATA
+  9  STORAGE(INITIAL 64K NEXT 64K PCTINCREASE 0 MINEXTENTS 1),
+ 10  CONSTRAINT Heberge_Par FOREIGN KEY (IdServ)
+ 11  REFERENCES Serveur(IdServ),
+ 12  CONSTRAINT Propose FOREIGN KEY (IdJeu)
+ 13  REFERENCES Jeu(IdJeu))
+ 14  tablespace TS_SEG_TEMP
+ 15  STORAGE(INITIAL 2048K NEXT 2048K PCTINCREASE 0 MINEXTENTS 1);
+CONSTRAINT Heberge_Par FOREIGN KEY (IdServ)
+                                    *
+ERREUR Ó la ligne 10 :
+ORA-00904: "IDSERV" : identificateur non valide
+
+
+SQL> CREATE TABLE Salon(
+  2  numS number(4) NOT NULL,
+  3  nomS VARCHAR2(100),
+  4  paysS VARCHAR2(255),
+  5  villeS VARCHAR2(255),
+  6  date_DebutS DATE not null,
+  7  date_FinS DATE,
+  8  PRIMARY KEY(numS) USING INDEX tablespace TS_INDEX_DATA
+  9  STORAGE(INITIAL 64K NEXT 64K PCTINCREASE 0 MINEXTENTS 1))
+ 10  tablespace TS_SEG_TEMP
+ 11  STORAGE(INITIAL 2048K NEXT 2048K PCTINCREASE 0 MINEXTENTS 1);
+
+Table crÚÚe.
+
+SQL> CREATE TABLE Utilisateur(
+  2  mailtoUsr VARCHAR(255) NOT NULL,
+  3  nomUsr VARCHAR(100),
+  4  prenomUsr VARCHAR(100),
+  5  date_naissanceUsr DATE NOT NULL,
+  6  paysUsr VARCHAR(255),
+  7  villeUsr VARCHAR(255),
+  8  nb_Amis int,
+  9  PRIMARY KEY(mailtoUsr) USING INDEX tablespace TS_INDEX_DATA
+ 10  STORAGE(INITIAL 64K NEXT 64K PCTINCREASE 0 MINEXTENTS 1))
+ 11  tablespace TS_DATA_USER
+ 12  STORAGE(INITIAL 4096K NEXT 4096K PCTINCREASE 0 MINEXTENTS 1);
+
+Table crÚÚe.
+
+SQL> CREATE TABLE AMITIE(
+  2  mailtoUsr1 VARCHAR(255) not null,
+  3  mailtoUsr2 VARCHAR(255) NOT NULL,
+  4  PRIMARY KEY(mailtoUsr1, mailtoUsr2) USING INDEX tablespace TS_INDEX_DATA
+  5  STORAGE(INITIAL 64K NEXT 64K PCTINCREASE 0 MINEXTENTS 1))
+  6  tablespace TS_DATA_USER
+  7  STORAGE(INITIAL 2048K NEXT 2048K PCTINCREASE 0 MINEXTENTS 1);
+
+Table crÚÚe.
+
+SQL> CREATE TABLE Jeu(
+  2  IdJeu int NOT NULL,
+  3  nomJeu VARCHAR(255),
+  4  annee_sortie DATE,
+  5  PRIMARY KEY (IdJeu) USING INDEX tablespace TS_INDEX_DATA
+  6  STORAGE(INITIAL 64K NEXT 64K PCTINCREASE 0 MINEXTENTS 1))
+  7  tablespace TS_DATA_FAB_JEU
+  8  STORAGE(INITIAL 2048K NEXT 2048K PCTINCREASE 0 MINEXTENTS 1);
+
+Table crÚÚe.
+
+SQL> CREATE TABLE Fabricant(
+  2  IdF int NOT NULL,
+  3  nomF VARCHAR(255),
+  4  PRIMARY KEY (IdF) USING INDEX tablespace TS_INDEX_DATA
+  5  STORAGE(INITIAL 64K NEXT 64K PCTINCREASE 0 MINEXTENTS 1))
+  6  tablespace TS_DATA_FAB_JEU
+  7  STORAGE(INITIAL 2048K NEXT 2048K PCTINCREASE 0 MINEXTENTS 1);
+
+Table crÚÚe.
+
+SQL> CREATE TABLE Serveur(
+  2  IdServ int NOT NULL,
+  3  nomServ VARCHAR(255),
+  4  PRIMARY KEY (IdServ) USING INDEX tablespace TS_INDEX_DATA
+  5  STORAGE(INITIAL 64K NEXT 64K PCTINCREASE 0 MINEXTENTS 1))
+  6  tablespace TS_DATA_SERV_LOCALITE
+  7  STORAGE(INITIAL 1024K NEXT 512K PCTINCREASE 0 MINEXTENTS 1);
+
+Table crÚÚe.
+
+SQL> CREATE TABLE Localite(
+  2  IdLoc int NOT NULL,
+  3  ville VARCHAR(255) UNIQUE,
+  4  PRIMARY KEY (IdLoc) USING INDEX tablespace TS_INDEX_DATA
+  5  STORAGE(INITIAL 64K NEXT 64K PCTINCREASE 0 MINEXTENTS 1))
+  6  tablespace TS_DATA_SERV_LOCALITE
+  7  STORAGE(INITIAL 1024K NEXT 1024K PCTINCREASE 0 MINEXTENTS 1);
+
+Table crÚÚe.
+
+
 
 
 
