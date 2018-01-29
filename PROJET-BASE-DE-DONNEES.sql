@@ -5,24 +5,24 @@ d'intégrités (de domaine : check/not null, d’entité : primary key/unique ke
 référence : foreign key)
 
 create table Salon(
-	numS number(4) NOT NULL USING INDEX tablespace TS_indexes
-	STORAGE(INITIAL ... NEXT ... PCTINCREASE ... MINEXTENTS ...), 
+	numS number(4) NOT NULL USING INDEX tablespace TS_INDEX_DATA
+	STORAGE(INITIAL 64K NEXT 64K PCTINCREASE 0 MINEXTENTS 1), 
 	nomS VARCHAR2(100),
 	paysS VARCHAR2(255),
 	villeS VARCHAR2(255),
 	date_DebutS DATE not null,
 	date_FinS DATE,
 	PRIMARY KEY(numS),
-	CONSTRAINT Hebergé_Par FOREIGN KEY (IdServ)
+	CONSTRAINT Heberge_Par FOREIGN KEY (IdServ)
 	REFERENCES Serveur(IdServ),
 	CONSTRAINT Propose FOREIGN KEY (IdJeu)
 	REFERENCES Jeu(IdJeu))
-tablespace TS_segmentTemp
-STORAGE(INITIAL ... NEXT ... PCTINCREASE ... MINEXTENTS ...);
+tablespace TS_SEG_TEMP
+STORAGE(INITIAL 2048K NEXT 2048K PCTINCREASE 0 MINEXTENTS 1);
 
 create table Utilisateur(
-	mailtoUsr VARCHAR(255) NOT NULL USING INDEX tablespace TS_indexes
-	STORAGE(INITIAL ... NEXT ... PCTINCREASE ... MINEXTENTS ...),
+	mailtoUsr VARCHAR(255) NOT NULL USING INDEX tablespace TS_INDEX_DATA
+	STORAGE(INITIAL 64K NEXT 64K PCTINCREASE 0 MINEXTENTS 1),
 	nomUsr VARCHAR(100),
 	prenomUsr VARCHAR(100),
 	date_naissanceUsr DATE NOT NULL,
@@ -32,50 +32,50 @@ create table Utilisateur(
 	PRIMARY KEY(mailtoUsr),
 	CONSTRAINT ParticipeA FOREIGN KEY (numS)
 	REFERENCES Salon(numS))
-tablespace TS_dataUsr
-STORAGE(INITIAL ... NEXT ... PCTINCREASE ... MINEXTENTS ...);
+tablespace TS_DATA_USER
+STORAGE(INITIAL 4096K NEXT 4096K PCTINCREASE 0 MINEXTENTS 1);
 
-create table Amitié(
-	mailtoUsr1 VARCHAR(255) not null USING INDEX tablespace TS_indexes
-	STORAGE(INITIAL ... NEXT ... PCTINCREASE ... MINEXTENTS ...),
+create table AMITIE(
+	mailtoUsr1 VARCHAR(255) not null USING INDEX tablespace TS_INDEX_DATA
+	STORAGE(INITIAL 64K NEXT 64K PCTINCREASE 0 MINEXTENTS 1),
 	mailtoUsr2 VARCHAR(255) NOT NULL,
 	PRIMARY KEY(mailtoUsr1, mailtoUsr2),
 	FOREIGN KEY(mailtoUsr2) REFERENCES utilisateur)
-tablespace TS_dataUsr
-STORAGE(INITIAL ... NEXT ... PCTINCREASE ... MINEXTENTS ...);
+tablespace TS_DATA_USER
+STORAGE(INITIAL 2048K NEXT 2048K PCTINCREASE 0 MINEXTENTS 1);
 
 create table Jeu(
-	IdJeu int NOT NULL USING INDEX tablespace TS_indexes
-	STORAGE(INITIAL ... NEXT ... PCTINCREASE ... MINEXTENTS ...),
+	IdJeu int NOT NULL USING INDEX tablespace TS_INDEX_DATA
+	STORAGE(INITIAL 64K NEXT 64K PCTINCREASE 0 MINEXTENTS 1),
 	nomJeu VARCHAR(255),
 	annee_sortie DATE,
-	CONSTRAINT Fabriqué_Par FOREIGN KEY (IdF)
+	CONSTRAINT Fabrique_Par FOREIGN KEY (IdF)
 	REFERENCES Fabricant(IdF))
-tablespace TS_dataFabNjeu
-STORAGE(INITIAL ... NEXT ... PCTINCREASE ... MINEXTENTS ...);
+tablespace TS_DATA_FAB_JEU
+STORAGE(INITIAL 2048K NEXT 2048K PCTINCREASE 0 MINEXTENTS 1);
 
 create table Fabricant(
-	IdF int NOT NULL USING INDEX tablespace TS_indexes
-	STORAGE(INITIAL ... NEXT ... PCTINCREASE ... MINEXTENTS ...),
+	IdF int NOT NULL USING INDEX tablespace TS_INDEX_DATA
+	STORAGE(INITIAL 64K NEXT 64K PCTINCREASE 0 MINEXTENTS 1),
 	nomF VARCHAR(255))
-tablespace TS_dataFabNjeu
-STORAGE(INITIAL ... NEXT ... PCTINCREASE ... MINEXTENTS ...);
+tablespace TS_DATA_FAB_JEU
+STORAGE(INITIAL 2048K NEXT 2048K PCTINCREASE 0 MINEXTENTS 1);
 
 create table Serveur(
-	IdServ int NOT NULLUSING INDEX tablespace TS_indexes
-	STORAGE(INITIAL ... NEXT ... PCTINCREASE ... MINEXTENTS ...),
+	IdServ int NOT NULLUSING INDEX tablespace TS_INDEX_DATA
+	STORAGE(INITIAL 64K NEXT 64K PCTINCREASE 0 MINEXTENTS 1),
 	nomServ VARCHAR(255),
 	CONSTRAINT Se_trouve FOREIGN KEY (IdLoc)
 	REFERENCES Localite(IdLoc))
-tablespace TS_dataServNLoc
-STORAGE(INITIAL ... NEXT ... PCTINCREASE ... MINEXTENTS ...);
+tablespace TS_DATA_SERV_LOCALITE
+STORAGE(INITIAL 1024K NEXT 512K PCTINCREASE 0 MINEXTENTS 1);
 
 create table Localite(
-	IdLoc int NOT NULL USING INDEX tablespace TS_indexes
-	STORAGE(INITIAL ... NEXT ... PCTINCREASE ... MINEXTENTS ...),
+	IdLoc int NOT NULL USING INDEX tablespace TS_INDEX_DATA
+	STORAGE(INITIAL 64K NEXT 64K PCTINCREASE 0 MINEXTENTS 1),
 	ville VARCHAR(255) UNIQUE)
 tablespace TS_dataServNLoc
-STORAGE(INITIAL ... NEXT ... PCTINCREASE ... MINEXTENTS ...);
+STORAGE(INITIAL 1024K NEXT 1024K PCTINCREASE 0 MINEXTENTS 1);
 
 o Définir au moins un trigger pour assurer l’intégrité des données ne pouvant être
 prise en charge par les contraintes d’intégrités du modèle relationnel
