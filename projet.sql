@@ -312,15 +312,56 @@ SQL> CREATE TABLE Localite(
 /*
 MODIFICATION DES TABLES EN AJOUTANT DES CONTRAINTES
 */
+SQL> ALTER TABLE salon ADD IdServ INT;
+
+Table modifiÚe.
+
+SQL> ALTER TABLE salon ADD CONSTRAINT fk_heberge_par FOREIGN KEY (IdServ) REFERENCES serveur(IdServ);
+
+Table modifiÚe.
+
+SQL> ALTER TABLE salon ADD IdJeu INT;
+
+Table modifiÚe.
+
+SQL> ALTER TABLE salon ADD CONSTRAINT fk_propose FOREIGN KEY (IdJeu) REFERENCES jeu(IdJeu);
+
+Table modifiÚe.
+
+SQL> ALTER TABLE utilisateur ADD CONSTRAINT fk_participa FOREIGN KEY (numS) REFERENCES salon(numS);
+
+Table modifiÚe.
+
+SQL> ALTER TABLE jeu ADD IdF INT;
+
+Table modifiÚe.
+
+SQL> ALTER TABLE jeu ADD CONSTRAINT fk_fabriquer_par FOREIGN KEY (IdF) REFERENCES fabricant(IdF);
+
+Table modifiÚe.
+
+SQL> ALTER TABLE serveur ADD IdLoc INT;
+
+Table modifiÚe.
+
+SQL> ALTER TABLE serveur ADD CONSTRAINT fk_se_trouve FOREIGN KEY (IdLoc) REFERENCES localite(IdLoc);
+
+Table modifiÚe.
+
+ALTER TABLE salon ADD IdServ INT;
 ALTER TABLE salon ADD CONSTRAINT fk_heberge_par FOREIGN KEY (IdServ) REFERENCES serveur(IdServ);
+ALTER TABLE salon ADD IdJeu INT;
 ALTER TABLE salon ADD CONSTRAINT fk_propose FOREIGN KEY (IdJeu) REFERENCES jeu(IdJeu);
 
+--ALTER TABLE utilisateur ADD numS INT;
 ALTER TABLE utilisateur ADD CONSTRAINT fk_participa FOREIGN KEY (numS) REFERENCES salon(numS);
 
 -- ALTER TABLE amitie ADD FOREIGN KEY (mailtoUsr2) REFERENCES utilisateur;
 
+ALTER TABLE jeu ADD IdF INT;
 ALTER TABLE jeu ADD CONSTRAINT fk_fabriquer_par FOREIGN KEY (IdF) REFERENCES fabricant(IdF);
 
+ALTER TABLE serveur ADD IdLoc INT;
 ALTER TABLE serveur ADD CONSTRAINT fk_se_trouve FOREIGN KEY (IdLoc) REFERENCES localite(IdLoc);
 
 
