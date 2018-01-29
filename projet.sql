@@ -240,7 +240,7 @@ SQL> CREATE TABLE Salon(
  10  tablespace TS_SEG_TEMP
  11  STORAGE(INITIAL 2048K NEXT 2048K PCTINCREASE 0 MINEXTENTS 1);
 
-Table crÚÚe.
+/*Table crÚÚe.*/
 
 SQL> CREATE TABLE Utilisateur(
   2  mailtoUsr VARCHAR(255) NOT NULL,
@@ -255,7 +255,7 @@ SQL> CREATE TABLE Utilisateur(
  11  tablespace TS_DATA_USER
  12  STORAGE(INITIAL 4096K NEXT 4096K PCTINCREASE 0 MINEXTENTS 1);
 
-Table crÚÚe.
+/*Table crÚÚe.*/
 
 SQL> CREATE TABLE AMITIE(
   2  mailtoUsr1 VARCHAR(255) not null,
@@ -265,7 +265,7 @@ SQL> CREATE TABLE AMITIE(
   6  tablespace TS_DATA_USER
   7  STORAGE(INITIAL 2048K NEXT 2048K PCTINCREASE 0 MINEXTENTS 1);
 
-Table crÚÚe.
+/*Table crÚÚe.*/
 
 SQL> CREATE TABLE Jeu(
   2  IdJeu int NOT NULL,
@@ -276,7 +276,7 @@ SQL> CREATE TABLE Jeu(
   7  tablespace TS_DATA_FAB_JEU
   8  STORAGE(INITIAL 2048K NEXT 2048K PCTINCREASE 0 MINEXTENTS 1);
 
-Table crÚÚe.
+/*Table crÚÚe.*/
 
 SQL> CREATE TABLE Fabricant(
   2  IdF int NOT NULL,
@@ -286,7 +286,7 @@ SQL> CREATE TABLE Fabricant(
   6  tablespace TS_DATA_FAB_JEU
   7  STORAGE(INITIAL 2048K NEXT 2048K PCTINCREASE 0 MINEXTENTS 1);
 
-Table crÚÚe.
+/*Table crÚÚe.*/
 
 SQL> CREATE TABLE Serveur(
   2  IdServ int NOT NULL,
@@ -296,7 +296,7 @@ SQL> CREATE TABLE Serveur(
   6  tablespace TS_DATA_SERV_LOCALITE
   7  STORAGE(INITIAL 1024K NEXT 512K PCTINCREASE 0 MINEXTENTS 1);
 
-Table crÚÚe.
+/*Table crÚÚe.*/
 
 SQL> CREATE TABLE Localite(
   2  IdLoc int NOT NULL,
@@ -306,10 +306,22 @@ SQL> CREATE TABLE Localite(
   6  tablespace TS_DATA_SERV_LOCALITE
   7  STORAGE(INITIAL 1024K NEXT 1024K PCTINCREASE 0 MINEXTENTS 1);
 
-Table crÚÚe.
+/*Table crÚÚe.*/
 
 
+/*
+MODIFICATION DES TABLES EN AJOUTANT DES CONTRAINTES
+*/
+ALTER TABLE salon ADD CONSTRAINT fk_heberge_par FOREIGN KEY (IdServ) REFERENCES serveur(IdServ);
+ALTER TABLE salon ADD CONSTRAINT fk_propose FOREIGN KEY (IdJeu) REFERENCES jeu(IdJeu);
 
+ALTER TABLE utilisateur ADD CONSTRAINT fk_participa FOREIGN KEY (numS) REFERENCES salon(numS);
+
+-- ALTER TABLE amitie ADD FOREIGN KEY (mailtoUsr2) REFERENCES utilisateur;
+
+ALTER TABLE jeu ADD CONSTRAINT fk_fabriquer_par FOREIGN KEY (IdF) REFERENCES fabricant(IdF);
+
+ALTER TABLE serveur ADD CONSTRAINT fk_se_trouve FOREIGN KEY (IdLoc) REFERENCES localite(IdLoc);
 
 
 -------- Note: Tous vos tablespaces seront gérés localement. Ils seront en mode AUTOALLOCATE
