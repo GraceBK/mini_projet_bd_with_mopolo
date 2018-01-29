@@ -36,29 +36,76 @@ LOCALITE (ID_LOC, VILLE_LOC)
 --------  Un ou plusieurs tabespaces pour stocker les données des tables.
 -- REPONSE _____________________________________________________________________________--
 ------------- TableSpaces pour stocker les données de tables:
-create tablespace TS_DATA_USER
-	datafile 'C:\APP\GB\ORADATA\PROJETJGM\TS_DATA_USER.dbf'
-	size 10M
-	extent management local autoallocate
-	segment space management auto;
-
+SQL> CREATE TABLESPACE TS_DATA_USER
+  2  DATAFILE 'C:\APP\GB\ORADATA\PROJETJGM\TS_DATA_USER.dbf'
+  3  SIZE 10M
+  4  EXTENT MANAGEMENT LOCAL AUTOALLOCATE
+  5  SEGMENT SPACE MANAGEMENT AUTO;
+/*Tablespace crÚÚ.*/
 --------  Un ou plusieurs tablespaces pour stocker les données d’indexes
 -- REPONSE _____________________________________________________________________________--
 ------------- TableSpaces pour stocker les données d'index:
-create tablespace TS_INDEX_DATA
-	datafile 'C:\APP\GB\ORADATA\PROJETJGM\TS_INDEX_DATA.dbf'
-	size 10M
-	extent management local autoallocate
-	segment space management auto;
+SQL> CREATE TABLESPACE TS_INDEX_DATA
+  2  DATAFILE 'C:\APP\GB\ORADATA\PROJETJGM\TS_INDEX_DATA.dbf'
+  3  SIZE 10M
+  4  EXTENT MANAGEMENT LOCAL AUTOALLOCATE
+  5  SEGMENT SPACE MANAGEMENT AUTO;
+/*Tablespace crÚÚ.*/
 
 --------  Un tablespace pour stocker les segments temporaires.
 -- REPONSE _____________________________________________________________________________--
 ------------- TableSpaces pour stocker les données d'index:
-create temporary tablespace TS_SEG_TEMP
-	datafile 'C:\APP\GB\ORADATA\PROJETJGM\TS_SEG_TEMP.dbf'
-	size 10M
-	extent management local autoallocate
-	segment space management auto;
+SQL> CREATE TEMPORARY TABLESPACE TS_SEG_TEMP
+  2  TEMPFILE 'C:\APP\GB\ORADATA\PROJETJGM\TS_SEG_TEMP.dbf'
+  3  SIZE 10M;
+/*Tablespace crÚÚ.*/
+/*
+SQL> col tablespace_name format A20
+SQL> col file_name format A70
+SQL> SET linesize 200
+SQL> SELECT tablespace_name, file_name
+  2  FROM dba_data_files;
+
+TABLESPACE_NAME      FILE_NAME
+-------------------- ----------------------------------------------------------------------
+USERS                C:\APP\GB\ORADATA\PROJETJGM\USERS01.DBF
+UNDOTBS1             C:\APP\GB\ORADATA\PROJETJGM\UNDOTBS01.DBF
+SYSAUX               C:\APP\GB\ORADATA\PROJETJGM\SYSAUX01.DBF
+SYSTEM               C:\APP\GB\ORADATA\PROJETJGM\SYSTEM01.DBF
+TS_DATA_USER         C:\APP\GB\ORADATA\PROJETJGM\TS_DATA_USER.DBF
+TS_INDEX_DATA        C:\APP\GB\ORADATA\PROJETJGM\TS_INDEX_DATA.DBF
+
+6 ligne(s) sÚlectionnÚe(s).
+
+SQL> SELECT TABLESPACE_NAME, BLOCK_SIZE, STATUS, CONTENTS, EXTENT_MANAGEMENT, ALLOCATION_TYPE, SEGMENT_SPACE_MANAGEMENT
+  2  FROM DBA_TABLESPACES
+  3  ORDER BY TABLESPACE_NAME;
+
+TABLESPACE_NAME      BLOCK_SIZE STATUS    CONTENTS  EXTENT_MAN ALLOCATIO SEGMEN
+-------------------- ---------- --------- --------- ---------- --------- ------
+SYSAUX                     8192 ONLINE    PERMANENT LOCAL      SYSTEM   AUTO
+SYSTEM                     8192 ONLINE    PERMANENT LOCAL      SYSTEM   MANUAL
+TEMP                       8192 ONLINE    TEMPORARY LOCAL      UNIFORM  MANUAL
+TS_DATA_USER               8192 ONLINE    PERMANENT LOCAL      SYSTEM   AUTO
+TS_INDEX_DATA              8192 ONLINE    PERMANENT LOCAL      SYSTEM   AUTO
+TS_SEG_TEMP                8192 ONLINE    TEMPORARY LOCAL      UNIFORM  MANUAL
+UNDOTBS1                   8192 ONLINE    UNDO      LOCAL      SYSTEM   MANUAL
+USERS                      8192 ONLINE    PERMANENT LOCAL      SYSTEM   AUTO
+
+8 ligne(s) sÚlectionnÚe(s).
+*/
+/*
+SQL> DROP TABLESPACE TEMP INCLUDING CONTENTS AND DATAFILES;
+DROP TABLESPACE TEMP INCLUDING CONTENTS AND DATAFILES
+*
+ERREUR Ó la ligne 1 :
+ORA-12906: impossible de supprimer le tablespace temporaire par dÚfaut
+*/
+SQL> ALTER DATABASE DEFAULT TEMPORARY TABLESPACE TS_SEG_TEMP;
+
+/*Base de donnÚes modifiÚe.*/
+
+
 
 -------- Note: Tous vos tablespaces seront gérés localement. Ils seront en mode AUTOALLOCATE
 -------- ou UNIFORM SIZE. Vous devez expliquer l’intérêt et les bénéfices de vos choix.
