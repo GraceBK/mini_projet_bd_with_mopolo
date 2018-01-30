@@ -1067,3 +1067,46 @@ where a.grantee = b.username;
 
 -- 3.3 Mise en place d'une stratégie de sauvegarde et restauration (voir le chap. 6 du cours ADB1)
 
+
+
+
+
+
+
+
+////////////////////////////////////////////////////
+RMAN BACKUP + RMAN RECOVER :
+https://docs.oracle.com/cd/B19306_01/backup.102/b14192/bkup003.htm
+/////////////////////////////////////////////////////
+
+    3.3 RMAN
+//elargir zone recuperation rapide
+sl> alter system set db_recovery_file_dest_size=20M;
+
+Passage mode archive:
+sql>shutdown immediate;
+sql>startup mount
+sql>archive log list;
+sql>alter database archivelog;
+sql>archive log list;
+sql>alter database open;
+
+Se connecter à RMAN
+c:>set ORACLE_SID=ORCL
+c:>rman
+rman> connect target sys@ORCL/dbamanager
+
+RMAN> SHUTDOWN IMMEDIATE;
+RMAN> STARTUP FORCE DBA;
+RMAN> SHUTDOWN IMMEDIATE;
+RMAN> STARTUP MOUNT;
+
+RMAN> BACKUP DATABASE INCLUDE CURRENT CONTROLFILE ;
+RMAN> BACKUP DEVICE TYPE sbt SPFILE;
+RMAN> BACKUP ARCHIVELOG ALL;
+///////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
+EXPORT : https://docs.oracle.com/cd/B10501_01/server.920/a96652/ch01.htm#1006108
+//////////////////////////////////////////////////////
+IMPORT : https://docs.oracle.com/cd/B10501_01/server.920/a96652/ch02.htm#1005864
+//////////////////////////////////////////////////////
