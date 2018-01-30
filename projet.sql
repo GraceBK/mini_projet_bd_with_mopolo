@@ -191,8 +191,7 @@ SQL> REVOKE UNLIMITED TABLESPACE FROM toto;
 
 Suppression de privilÞges (REVOKE) acceptÚe.
 
-SQL> CONNECT toto/azerty
-ConnectÚ.
+
 
 SQL> CONNECT toto/azerty
 ConnectÚ.
@@ -200,8 +199,7 @@ SQL> ALTER USER toto QUOTA UNLIMITED ON USERS
   2  QUOTA UNLIMITED ON TS_DATA_USER
   3  QUOTA UNLIMITED ON TS_DATA_FAB_JEU
   4  QUOTA UNLIMITED ON TS_DATA_SERV_LOCALITE
-  5  QUOTA UNLIMITED ON TS_INDEX_DATA
-  6  ;
+  5  QUOTA UNLIMITED ON TS_INDEX_DATA;
 /*Utilisateur modifiÚ.*/
 
 /*
@@ -369,7 +367,7 @@ ALTER TABLE serveur ADD CONSTRAINT fk_se_trouve FOREIGN KEY (IdLoc) REFERENCES l
 -------- ou UNIFORM SIZE. Vous devez expliquer l’intérêt et les bénéfices de vos choix.
 
 --______________________________________________________________________________________--
-
+/*****************
 -- SALON (NUM_SAL, NOM_SAL, PAYS_SAL, VILLE_SAL, DATE_DEBUT_SAL, DATE_FIN_SAL)
 create table SALON (
 	NUM_SAL 		int not null using index tablespace TS_INDEX_DATA storage(
@@ -430,15 +428,12 @@ create table LOCALITE (
 	VILLE_LOC		varchar(255) unique
 );
 
-
-
-
 alter table SALON add constraint fk_heberge_par foreign key (ID_SER)
 references SERVEUR(ID_SER)
 
 alter table SALON add constraint fk_heberge_par foreign key (ID_SER)
 references SERVEUR(ID_SER)
-
+*/
 
 
 
@@ -622,7 +617,6 @@ END
 ------ 
 ------ 
 ------ 
-
 -- insertion FABRICANT (ID_FAB, NOM_FAB)
 insert into FABRICANT values(1, 'Sega');
 insert into FABRICANT values(2, 'Sony');
@@ -732,18 +726,101 @@ NB_AMIS_USR
 ---- 3.2 Divers requêtes
 ------ 1) Ecrire une requête SQL qui permet de visualiser l’ensemble des fichiers qui composent votre base
 -- REPONSE _____________________________________________________________________________--
+------ Julien
+SQL> SELECT file_name, file_id, tablespace_name FROM DBA_DATA_FILES order by file_id;
+/*
+FILE_NAME
+--------------------------------------------------------------------------------
+   FILE_ID TABLESPACE_NAME
+---------- ------------------------------
+C:\APP\GB\ORADATA\PROJETJGM\SYSTEM01.DBF
+         1 SYSTEM
+
+C:\APP\GB\ORADATA\PROJETJGM\SYSAUX01.DBF
+         2 SYSAUX
+
+C:\APP\GB\ORADATA\PROJETJGM\UNDOTBS01.DBF
+         3 UNDOTBS1
+
+
+FILE_NAME
+--------------------------------------------------------------------------------
+   FILE_ID TABLESPACE_NAME
+---------- ------------------------------
+C:\APP\GB\ORADATA\PROJETJGM\USERS01.DBF
+         4 USERS
+
+C:\APP\GB\ORADATA\PROJETJGM\TS_DATA_USER.DBF
+         5 TS_DATA_USER
+
+C:\APP\GB\ORADATA\PROJETJGM\TS_INDEX_DATA.DBF
+         6 TS_INDEX_DATA
+
+
+FILE_NAME
+--------------------------------------------------------------------------------
+   FILE_ID TABLESPACE_NAME
+---------- ------------------------------
+C:\APP\GB\ORADATA\PROJETJGM\TS_DATA_SERV_LOCALITE.DBF
+         7 TS_DATA_SERV_LOCALITE
+
+C:\APP\GB\ORADATA\PROJETJGM\TS_DATA_FAB_JEU.DBF
+         8 TS_DATA_FAB_JEU
+
+
+8 ligne(s) sÚlectionnÚe(s).
+*/
+SQL> Select GROUP#, MEMBER from v$logfile order by GROUP#, MEMBER;
+/*
+    GROUP#
+----------
+MEMBER
+--------------------------------------------------------------------------------
+         1
+C:\APP\GB\ORADATA\PROJETJGM\REDO01.LOG
+
+         2
+C:\APP\GB\ORADATA\PROJETJGM\REDO02.LOG
+
+         3
+C:\APP\GB\ORADATA\PROJETJGM\REDO03.LOG
+*/
+SQL> select NAME from v$controlfile order by NAME;
+/*
+NAME
+--------------------------------------------------------------------------------
+C:\APP\GB\FLASH_RECOVERY_AREA\PROJETJGM\CONTROL02.CTL
+C:\APP\GB\ORADATA\PROJETJGM\CONTROL01.CTL
+*/
+--______________________________________________________________________________________
 select DBA_DATA_FILES.TABLESPACE_NAME, DBA_DATA_FILES.FILE_NAME, DBA_TEMP_FILES.TABLESPACE_NAME, DBA_TEMP_FILES.FILE_NAME,
 		v$logfile.GROUP#, v$logfile.MEMBER,
 		v$controlfile.NAME, v$controlfile.STATUS
 from DBA_DATA_FILES, DBA_TEMP_FILES, v$logfile, v$controlfile
-order DBA_TEMP_FILES.TABLESPACE_NAME,v$logfile.GROUP#, v$logfile.MEMBER, v$controlfile.NAME;
+order by DBA_TEMP_FILES.TABLESPACE_NAME,v$logfile.GROUP#, v$logfile.MEMBER, v$controlfile.NAME;
 
 
 ------ 2) Ecrire une requête SQL qui permet de lister en une requête l’ensembles des tablespaces avec
 ------    leur fichiers. La taille de chaque fichier doit apparaître, le volume total de l’espace occupé
 ------    par fichier ainsi que le volume total de l’espace libre par fichier
 -- REPONSE _____________________________________________________________________________--
+SQL> SELECT tablespace_name, bytes, user_bytes, maxbytes  FROM DBA_DATA_FILES order by TABLESPACE_NAME;
+/*
+TABLESPACE_NAME                     BYTES USER_BYTES   MAXBYTES
+------------------------------ ---------- ---------- ----------
+SYSAUX                          524288000  523239424 3,4360E+10
+SYSTEM                          713031680  711983104 3,4360E+10
+TS_DATA_FAB_JEU                  10485760    9437184          0
+TS_DATA_SERV_LOCALITE            10485760    9437184          0
+TS_DATA_USER                     10485760    9437184          0
+TS_INDEX_DATA                    10485760    9437184          0
+UNDOTBS1                         47185920   46137344 3,4360E+10
+USERS                             5242880    4194304 3,4360E+10
 
+8 ligne(s) sÚlectionnÚe(s).
+*/
+--______________________________________________________________________________________--
+/*
 select a.TABLESPACE_NAME, a.FILE_NAME, a.BYTES, b.free_bytes, nvl(a.bytes, 0)-nvl(b.free_bytes,0) " espace occupe"
 from (
 	select TABLESPACE_NAME, bytes, FILE_NAME
@@ -753,14 +830,225 @@ from (
 	from DBA_FREE_SPACE
 ) b
 where a.TABLESPACE_NAME = b.TABLESPACE_NAME;
+*/
+SQL> SELECT tablespace_name, bytes, user_bytes, maxbytes  FROM DBA_DATA_FILES order by TABLESPACE_NAME;
+/*
+TABLESPACE_NAME                     BYTES USER_BYTES   MAXBYTES
+------------------------------ ---------- ---------- ----------
+SYSAUX                          524288000  523239424 3,4360E+10
+SYSTEM                          713031680  711983104 3,4360E+10
+TS_DATA_FAB_JEU                  10485760    9437184          0
+TS_DATA_SERV_LOCALITE            10485760    9437184          0
+TS_DATA_USER                     10485760    9437184          0
+TS_INDEX_DATA                    10485760    9437184          0
+UNDOTBS1                         47185920   46137344 3,4360E+10
+USERS                             5242880    4194304 3,4360E+10
+
+8 ligne(s) sÚlectionnÚe(s).
+*/
+SQL> select a.TABLESPACE_NAME, a.FILE_NAME, a.BYTES, b.free_bytes, nvl(a.bytes, 0)-nvl(b.free_bytes,0) " espace occupe"
+  2  from (
+  3  select TABLESPACE_NAME, bytes, FILE_NAME
+  4  from DBA_DATA_FILES
+  5  ) a, (
+  6  select TABLESPACE_NAME, BYTES free_bytes
+  7  from DBA_FREE_SPACE
+  8  ) b
+  9  where a.TABLESPACE_NAME = b.TABLESPACE_NAME;
+/*
+TABLESPACE_NAME
+------------------------------
+FILE_NAME
+--------------------------------------------------------------------------------
+     BYTES FREE_BYTES  espace occupe
+---------- ---------- --------------
+SYSTEM
+C:\APP\GB\ORADATA\PROJETJGM\SYSTEM01.DBF
+ 713031680     983040      712048640
+
+SYSAUX
+C:\APP\GB\ORADATA\PROJETJGM\SYSAUX01.DBF
+ 524288000   28704768      495583232
+
+TABLESPACE_NAME
+------------------------------
+FILE_NAME
+--------------------------------------------------------------------------------
+     BYTES FREE_BYTES  espace occupe
+---------- ---------- --------------
+
+UNDOTBS1
+C:\APP\GB\ORADATA\PROJETJGM\UNDOTBS01.DBF
+  47185920     131072       47054848
+
+UNDOTBS1
+C:\APP\GB\ORADATA\PROJETJGM\UNDOTBS01.DBF
+
+TABLESPACE_NAME
+------------------------------
+FILE_NAME
+--------------------------------------------------------------------------------
+     BYTES FREE_BYTES  espace occupe
+---------- ---------- --------------
+  47185920     589824       46596096
+
+UNDOTBS1
+C:\APP\GB\ORADATA\PROJETJGM\UNDOTBS01.DBF
+  47185920     589824       46596096
+
+UNDOTBS1
+
+TABLESPACE_NAME
+------------------------------
+FILE_NAME
+--------------------------------------------------------------------------------
+     BYTES FREE_BYTES  espace occupe
+---------- ---------- --------------
+C:\APP\GB\ORADATA\PROJETJGM\UNDOTBS01.DBF
+  47185920    9437184       37748736
+
+UNDOTBS1
+C:\APP\GB\ORADATA\PROJETJGM\UNDOTBS01.DBF
+  47185920    2097152       45088768
+
+
+TABLESPACE_NAME
+------------------------------
+FILE_NAME
+--------------------------------------------------------------------------------
+     BYTES FREE_BYTES  espace occupe
+---------- ---------- --------------
+UNDOTBS1
+C:\APP\GB\ORADATA\PROJETJGM\UNDOTBS01.DBF
+  47185920      65536       47120384
+
+UNDOTBS1
+C:\APP\GB\ORADATA\PROJETJGM\UNDOTBS01.DBF
+  47185920     131072       47054848
+
+TABLESPACE_NAME
+------------------------------
+FILE_NAME
+--------------------------------------------------------------------------------
+     BYTES FREE_BYTES  espace occupe
+---------- ---------- --------------
+
+UNDOTBS1
+C:\APP\GB\ORADATA\PROJETJGM\UNDOTBS01.DBF
+  47185920     327680       46858240
+
+UNDOTBS1
+C:\APP\GB\ORADATA\PROJETJGM\UNDOTBS01.DBF
+
+TABLESPACE_NAME
+------------------------------
+FILE_NAME
+--------------------------------------------------------------------------------
+     BYTES FREE_BYTES  espace occupe
+---------- ---------- --------------
+  47185920    1572864       45613056
+
+UNDOTBS1
+C:\APP\GB\ORADATA\PROJETJGM\UNDOTBS01.DBF
+  47185920     393216       46792704
+
+UNDOTBS1
+
+TABLESPACE_NAME
+------------------------------
+FILE_NAME
+--------------------------------------------------------------------------------
+     BYTES FREE_BYTES  espace occupe
+---------- ---------- --------------
+C:\APP\GB\ORADATA\PROJETJGM\UNDOTBS01.DBF
+  47185920     458752       46727168
+
+UNDOTBS1
+C:\APP\GB\ORADATA\PROJETJGM\UNDOTBS01.DBF
+  47185920    8060928       39124992
+
+
+TABLESPACE_NAME
+------------------------------
+FILE_NAME
+--------------------------------------------------------------------------------
+     BYTES FREE_BYTES  espace occupe
+---------- ---------- --------------
+UNDOTBS1
+C:\APP\GB\ORADATA\PROJETJGM\UNDOTBS01.DBF
+  47185920    4194304       42991616
+
+UNDOTBS1
+C:\APP\GB\ORADATA\PROJETJGM\UNDOTBS01.DBF
+  47185920    3145728       44040192
+
+TABLESPACE_NAME
+------------------------------
+FILE_NAME
+--------------------------------------------------------------------------------
+     BYTES FREE_BYTES  espace occupe
+---------- ---------- --------------
+
+USERS
+C:\APP\GB\ORADATA\PROJETJGM\USERS01.DBF
+   5242880    3866624        1376256
+
+TS_DATA_USER
+C:\APP\GB\ORADATA\PROJETJGM\TS_DATA_USER.DBF
+
+TABLESPACE_NAME
+------------------------------
+FILE_NAME
+--------------------------------------------------------------------------------
+     BYTES FREE_BYTES  espace occupe
+---------- ---------- --------------
+  10485760    9437184        1048576
+
+TS_INDEX_DATA
+C:\APP\GB\ORADATA\PROJETJGM\TS_INDEX_DATA.DBF
+  10485760    9437184        1048576
+
+TS_DATA_SERV_LOCALITE
+
+TABLESPACE_NAME
+------------------------------
+FILE_NAME
+--------------------------------------------------------------------------------
+     BYTES FREE_BYTES  espace occupe
+---------- ---------- --------------
+C:\APP\GB\ORADATA\PROJETJGM\TS_DATA_SERV_LOCALITE.DBF
+  10485760    9437184        1048576
+
+TS_DATA_FAB_JEU
+C:\APP\GB\ORADATA\PROJETJGM\TS_DATA_FAB_JEU.DBF
+  10485760    9437184        1048576
+
+
+21 ligne(s) sÚlectionnÚe(s).
+*/
 
 ------ 3) Ecrire une requête SQL qui permet de lister les segments et leurs extensions
 --------- de chacun des segments (tables ou indexes) de votre utilisateur
-select segment_name, extents, segment_type from user dba_segments where owner='mopolo';
+select segment_name, extents, segment_type from dba_segments where owner='mopolo';
 
 ------ 4) Ecrire une requête qui permet pour chacun de vos segments de donner le nombre
 --------- total de blocs du segment, le nombre de blocs utilisés et le nombre de blocs libres
---- TODO
+SQL> SELECT tablespace_name, SUM(blocks), MIN(blocks) , MAX(blocks), AVG(blocks)
+  2  FROM dba_free_space GROUP BY tablespace_name;
+/*
+TABLESPACE_NAME                SUM(BLOCKS) MIN(BLOCKS) MAX(BLOCKS) AVG(BLOCKS)
+------------------------------ ----------- ----------- ----------- -----------
+SYSAUX                                3504        3504        3504        3504
+UNDOTBS1                              4064           8        1152  270,933333
+TS_INDEX_DATA                         1152        1152        1152        1152
+TS_DATA_USER                          1152        1152        1152        1152
+TS_DATA_FAB_JEU                       1152        1152        1152        1152
+USERS                                  472         472         472         472
+SYSTEM                                 120         120         120         120
+TS_DATA_SERV_LOCALITE                 1152        1152        1152        1152
+
+8 ligne(s) sÚlectionnÚe(s).
+*/
 
 ------ 5) Ecrire une requête SQL qui permet de compacter et réduire un segment
 alter table UTILISATEUR enable row movement;
