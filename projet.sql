@@ -1068,8 +1068,19 @@ where a.grantee = b.username;
 -- 3.3 Mise en place d'une stratégie de sauvegarde et restauration (voir le chap. 6 du cours ADB1)
 
 
+------------------------------- SQLOADER -----------------------------------------
+
+PS C:\> sqlldr.exe toto/azerty Control=scriptSQLLoader.ctl log=resultatInjection.log
+
+SQL*Loader: Release 11.2.0.1.0 - Production on Mar. Janv. 30 16:58:40 2018
+
+Copyright (c) 1982, 2009, Oracle and/or its affiliates.  All rights reserved.
+
+Point de validation (COMMIT) atteint - nombre d'enregis. logiques 8
 
 
+
+------------------------------- RMAN -----------------------------------------
 
 
 

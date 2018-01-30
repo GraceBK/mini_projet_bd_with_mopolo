@@ -1,0 +1,55 @@
+
+SQL*Loader: Release 11.2.0.1.0 - Production on Mar. Janv. 30 17:09:16 2018
+
+Copyright (c) 1982, 2009, Oracle and/or its affiliates.  All rights reserved.
+
+Fichier de contrôle :   scriptSQLLoader.ctl
+Fichier de données :      C:\data.csv
+  Fichier des enregistrements refusés :     data.bad
+  Fichier DISCARD :  aucune spécification
+
+ (Allouer tous les rebuts)
+
+Nombre à charger : ALL
+Nombre à sauter: 0
+Erreurs permises: 50
+Tableau de variables :     64 lignes, maximum de 256000 octets
+Continuation :    aucune spécification
+Chemin utilisé:      Classique
+
+Table UTILISATEUR, chargé à partir de chaque enregistrement physique.
+Option d'insertion en vigueur pour cette table : TRUNCATE
+option TRAILING NULLCOLS effective
+
+   Nom de colonne               Position   Long.  Séparat. Encadrem. Type de données
+------------------------------ ---------- ----- ---- ---- ---------------------
+MAILTOUSR                           FIRST     *   ,       CHARACTER            
+NOMUSR                               NEXT     *   ,       CHARACTER            
+PRENOMUSR                            NEXT     *   ,       CHARACTER            
+DATE_NAISSANCEUSR                    NEXT     *   ,       CHARACTER            
+PAYSUSR                              NEXT     *   ,       CHARACTER            
+VILLEUSR                             NEXT     *   ,       CHARACTER            
+NB_AMIS                              NEXT     *   ,       CHARACTER            
+NUMS                                 NEXT     *   ,       CHARACTER            
+
+
+Table UTILISATEUR :
+  Chargement réussi de 7 Lignes.
+  0 Lignes chargement impossible dû à des erreurs de données.
+  0 Lignes chargement impossible car échec de toutes les clauses WHEN.
+  0 Lignes chargement impossible car tous les champs étaient non renseignés.
+
+
+Espace affecté au tableau de variables :                 132096 octets(64 lignes)
+Octets de tampon de lecture : 1048576
+
+Nombre total d'enregistrements logiques ignorés :          0
+Nombre total d'enregistrements logiques lus :             7
+Nombre total d'enregistrements logiques rejetés :         0
+Nombre total d'enregistrements logiques mis au rebut :        0
+
+Le début de l'exécution a été effectué sur Mar. Janv. 30 17:09:16 2018
+La fin de l'exécution a été effectuée sur Mar. Janv. 30 17:09:16 2018
+
+Temps écoulé (ELAPSED) :     00:00:00.19
+Temps processeur (CPU) :    00:00:00.01

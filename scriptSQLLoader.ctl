@@ -1,24 +1,16 @@
 LOAD DATA
- INFILE 'C:\data.csv'
-
+INFILE 'C:\data.csv'
 TRUNCATE
 INTO TABLE UTILISATEUR
-
 FIELDS TERMINATED BY ','
+TRAILING NULLCOLS
 (
-
-MAILTO_USR,
-
-NOM_USR,
-
-PRENOM_USR,
-
-DATE_NAISS_USR,
-
-PAYS_USR,
-
-VILLE_USR,
-
-NB_AMIS_USR
-
+mailtoUsr,
+nomUsr,
+prenomUsr,
+date_naissanceUsr,
+paysUsr,
+villeUsr,
+nb_Amis,
+numS
 )
