@@ -502,7 +502,8 @@ DBMS_SPACE.CREATE_TABLE_COST(
 	-- TODO pourquoi ne pas utiliser TS_SEG_TEMP au lieu de TS_DATA_USER
 	'TS_DATA_USER',
 	v_type_salon,
-	...ROW_COUNT...,
+	1000,
+  5,
 	v_used_bytes,
 	v_allocated_Bytes
 );
@@ -522,7 +523,8 @@ v_type_utilisateur := sys.create_table_cost_columns (
 DBMS_SPACE.CREATE_TABLE_COST(
 	'TS_DATA_USER',
 	v_type_utilisateur,
-	...ROW_COUNT...,
+	1000,
+  5,
 	v_used_bytes,
 	v_allocated_Bytes
 );
@@ -537,7 +539,8 @@ v_type_amitie := sys.create_table_cost_columns (
 DBMS_SPACE.CREATE_TABLE_COST(
 	'TS_DATA_USER',
 	v_type_amitie,
-	...ROW_COUNT...,
+	1000,
+  5,
 	v_used_bytes,
 	v_allocated_Bytes
 );
@@ -552,7 +555,8 @@ v_type_jeu := sys.create_table_cost_columns (
 DBMS_SPACE.CREATE_TABLE_COST(
 	'TS_DATA_USER',
 	v_type_jeu,
-	...ROW_COUNT...,
+	1000,
+  5,
 	v_used_bytes,
 	v_allocated_Bytes
 );
@@ -567,7 +571,8 @@ v_type_fabricant := sys.create_table_cost_columns (
 DBMS_SPACE.CREATE_TABLE_COST(
 	'TS_DATA_USER',
 	v_type_jeu,
-	...ROW_COUNT...,
+	1000,
+  5,
 	v_used_bytes,
 	v_allocated_Bytes
 );
@@ -582,7 +587,8 @@ v_type_serveur := sys.create_table_cost_columns (
 DBMS_SPACE.CREATE_TABLE_COST(
 	'TS_DATA_USER',
 	v_type_serveur,
-	...ROW_COUNT...,
+	1000,
+  5,
 	v_used_bytes,
 	v_allocated_Bytes
 );
@@ -597,7 +603,8 @@ v_type_localite := sys.create_table_cost_columns (
 DBMS_SPACE.CREATE_TABLE_COST(
 	'TS_DATA_USER',
 	v_type_localite,
-	...ROW_COUNT...,
+	1000,
+  5,
 	v_used_bytes,
 	v_allocated_Bytes
 );

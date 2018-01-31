@@ -690,7 +690,8 @@ SYS_C0012340	1	INDEX
 
 -- 	   4) Ecrire une requête qui permet pour chacun de vos segments de donner le nombre
 --        total de blocs du segment, le nombre de blocs utilisés et le nombre de blocs libres
-<TODO SELECT OWNER, segment_name ,  blocks FROM DBA_SEGMENTS >
+
+SELECT OWNER, SEGMENT_NAME, blocks FROM DBA_SEGMENTS
 
 
 -- 	   5) Ecrire une requête SQL qui permet de compacter et réduire un segment
