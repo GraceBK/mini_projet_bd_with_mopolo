@@ -1,8 +1,8 @@
 /*
 Membres de l'equipe:
-	BOUKOU Grace
-	Julien
-	Mohamed
+	Grace Boukou
+	Julien Boivert
+	Mohamed Kadri Mounkaila
 */
 
 -- 1.2 Schéma logique de données
@@ -286,8 +286,154 @@ grant create session to THEBOSS; 		--Pour qu'il puisse se connecter
 --      de ces segments. Il est important d’estimer le nombre total de lignes de chacune
 --      de vos tables
 
--- <TODO DBMS>
+SET SERVEROUTPUT ON
+DECLARE
+v_used_bytes NUMBER(10);
+v_allocated_Bytes NUMBER(10);
+v_type_salon sys.create_table_cost_columns;
+v_type_utilisateur sys.create_table_cost_columns;
+v_type_amitie sys.create_table_cost_columns;
+v_type_jeu sys.create_table_cost_columns;
+v_type_fabricant sys.create_table_cost_columns;
+v_type_serveur sys.create_table_cost_columns;
+v_type_localite sys.create_table_cost_columns;
 
+BEGIN
+-- SALON (NUM_SAL, NOM_SAL, PAYS_SAL, VILLE_SAL, DATE_DEBUT_SAL, DATE_FIN_SAL)
+v_type_salon := sys.create_table_cost_columns (
+	sys.create_table_cost_colinfo('int', 3),
+	sys.create_table_cost_colinfo('varchar2', 100),
+	sys.create_table_cost_colinfo('varchar2', 255),
+	sys.create_table_cost_colinfo('varchar2', 255),
+	sys.create_table_cost_colinfo('date', null),
+	sys.create_table_cost_colinfo('date', null));
+DBMS_SPACE.CREATE_TABLE_COST(
+	'TS_SEGMENTTEMP',
+	v_type_salon,
+	1000,
+  5,
+	v_used_bytes,
+	v_allocated_Bytes
+);
+DBMS_OUTPUT.PUT_LINE(
+	'Salon: ' || TO_CHAR(v_used_bytes) || ' Allocated Bytes: ' || TO_CHAR(v_allocated_Bytes)
+);
+
+-- UTILISATEUR (MAILTO_USR, NOM_USR, PRENOM_USR, DATE_NAISS_USR, PAYS_USR, VILLE_USR, NB_AMIS_USR)
+v_type_utilisateur := sys.create_table_cost_columns (
+	sys.create_table_cost_colinfo('varchar2', 255),
+	sys.create_table_cost_colinfo('varchar2', 100),
+	sys.create_table_cost_colinfo('varchar2', 100),
+	sys.create_table_cost_colinfo('date', null),
+	sys.create_table_cost_colinfo('varchar2', 255),
+	sys.create_table_cost_colinfo('varchar2', 255),
+	sys.create_table_cost_colinfo('int', 2));
+DBMS_SPACE.CREATE_TABLE_COST(
+	'TS_DATA_USER',
+	v_type_utilisateur,
+	1000,
+  5,
+	v_used_bytes,
+	v_allocated_Bytes
+);
+DBMS_OUTPUT.PUT_LINE(
+	'Utilisateur: ' || TO_CHAR(v_used_bytes) || ' Allocated Bytes: ' || TO_CHAR(v_allocated_Bytes)
+);
+
+-- AMITIE (MAILTO_USR1, MAILTO_USR2)
+v_type_amitie := sys.create_table_cost_columns (
+	sys.create_table_cost_colinfo('varchar2', 255),
+	sys.create_table_cost_colinfo('varchar2', 255));
+DBMS_SPACE.CREATE_TABLE_COST(
+	'TS_DATA_USER',
+	v_type_amitie,
+	1000,
+  5,
+	v_used_bytes,
+	v_allocated_Bytes
+);
+DBMS_OUTPUT.PUT_LINE(
+	'Amitie: ' || TO_CHAR(v_used_bytes) || ' Allocated Bytes: ' || TO_CHAR(v_allocated_Bytes)
+);
+
+-- JEU (ID_JEU, NOM_JEU, ANNEE_SORTIE_JEU)
+v_type_jeu := sys.create_table_cost_columns (
+	sys.create_table_cost_colinfo('varchar2', 255),
+	sys.create_table_cost_colinfo('varchar2', 255));
+DBMS_SPACE.CREATE_TABLE_COST(
+	'TS_DATAFABNJEU',
+	v_type_jeu,
+	1000,
+  5,
+	v_used_bytes,
+	v_allocated_Bytes
+);
+DBMS_OUTPUT.PUT_LINE(
+	'Jeu: ' || TO_CHAR(v_used_bytes) || ' Allocated Bytes: ' || TO_CHAR(v_allocated_Bytes)
+);
+
+-- FABRICANT (ID_FAB, NOM_FAB)
+v_type_fabricant := sys.create_table_cost_columns (
+	sys.create_table_cost_colinfo('int', 2),
+	sys.create_table_cost_colinfo('varchar2', 255));
+DBMS_SPACE.CREATE_TABLE_COST(
+	'TS_DATAFABNJEU',
+	v_type_jeu,
+	1000,
+  5,
+	v_used_bytes,
+	v_allocated_Bytes
+);
+DBMS_OUTPUT.PUT_LINE(
+	'Fabricant: ' || TO_CHAR(v_used_bytes) || ' Allocated Bytes: ' || TO_CHAR(v_allocated_Bytes)
+);
+
+-- SERVEUR (ID_SER, NOM_SER)
+v_type_serveur := sys.create_table_cost_columns (
+	sys.create_table_cost_colinfo('int', 2),
+	sys.create_table_cost_colinfo('varchar2', 255));
+DBMS_SPACE.CREATE_TABLE_COST(
+	'TS_DATASERVNLOC',
+	v_type_serveur,
+	1000,
+  5,
+	v_used_bytes,
+	v_allocated_Bytes
+);
+DBMS_OUTPUT.PUT_LINE(
+	'Fabricant: ' || TO_CHAR(v_used_bytes) || ' Allocated Bytes: ' || TO_CHAR(v_allocated_Bytes)
+);
+
+-- LOCALITE (ID_LOC, VILLE_LOC)
+v_type_localite := sys.create_table_cost_columns (
+	sys.create_table_cost_colinfo('int', 2),
+	sys.create_table_cost_colinfo('varchar2', 255));
+DBMS_SPACE.CREATE_TABLE_COST(
+	'TS_dataServNLoc',
+	v_type_localite,
+	1000,
+  5,
+	v_used_bytes,
+	v_allocated_Bytes
+);
+DBMS_OUTPUT.PUT_LINE(
+	'Fabricant: ' || TO_CHAR(v_used_bytes) || ' Allocated Bytes: ' || TO_CHAR(v_allocated_Bytes)
+);
+END;
+/
+
+/*
+Salon: 376832 Allocated Bytes: 393216
+Utilisateur: 548864 Allocated Bytes: 589824
+Amitie: 286720 Allocated Bytes: 327680
+Jeu: 286720 Allocated Bytes: 327680
+Fabricant: 286720 Allocated Bytes: 327680
+Fabricant: 155648 Allocated Bytes: 196608
+Fabricant: 155648 Allocated Bytes: 196608
+
+
+Procédure PL/SQL terminée.
+*/
 
 --    Insérer pour l’instant en moyenne une dizaine de lignes de test dans chacune des
 -- tables.
@@ -774,18 +920,19 @@ PILOTEMOHAMED	VALID
 --     d’archives / du fichier de contrôle, duplications des fichiers de contrôles ou rédo, etc).
 --     Utililser l’outil Oracle Recovery Manager pour la mettre en œuvre.
 --     Ecrirte pour cela un script de sauvegarde qui permet sous RMAN :
-- D’arrêter la base
-- De sauvegarder les fichiers de données
-- De sauvergarder les fichiers d’archives
-- De sauvegarder le SPFILE
-- De sauvegarder les fichiers de contrôle
+-- - D’arrêter la base
+-- - De sauvegarder les fichiers de données
+-- - De sauvergarder les fichiers d’archives
+-- - De sauvegarder le SPFILE
+-- - De sauvegarder les fichiers de contrôle
 <réponses et trace ici>
 
 
 -- 3.4 Provoquer deux pannes au moins 
 --     Provoquer deux pannes au moins et y remedier grâce à votre stratégie de sauvegarde. Les
 --     pannes peuvent être :
-- La perte de fichiers de données
+-- - La perte de fichiers de données
+
 - La perte de fichiers de contrôles.
 <TODO>
 
